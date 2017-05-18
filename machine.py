@@ -21,6 +21,7 @@ machine_step= 1/4096
 machine_ready = False
 
 machine_pos=[0,0,0]
+machine_steps=[0,0,0]
 
 motion = 0 # G00 , G01, G02, G03, G04
 
@@ -35,8 +36,10 @@ coord = 90 # G90, G91
 feed = 94 # G94, G95
 
 F = 1
+act_F=0
 
 S = 0
+act_S=0
 
 opt_stop = False
 
@@ -51,7 +54,39 @@ G56 = [0,0,0]
 #G57 = (0,0,0)
 #G58 = (0,0,0)
 
-
+def saveData():
+    file = open('Configs', 'w')
+    file.write(str(machine_pos[0])+ '\n')
+    file.write(str(machine_pos[1])+ '\n')
+    file.write(str(machine_pos[2])+ '\n')
+    file.write(str(machine_steps[0])+ '\n')
+    file.write(str(machine_steps[1])+ '\n')
+    file.write(str(machine_steps[2])+ '\n')
+    file.write(str(machine_steps[2])+ '\n')
+    file.write(str(act_F)+ '\n')
+    
+    
+    file.close()
+    
+def loadData():
+    global act_F, act_S
+    file = open('Configs', 'r')
+    parameters= []
+    for i in file:
+        parameters.append(i.rstrip())
+    file.close()
+    machine_pos[0] = float(parameters[0])
+    machine_pos[1] = float(parameters[1])
+    machine_pos[2] = float(parameters[2])
+    machine_step[0] = int(parameters[3])
+    machine_step[1] = int(parameters[4])
+    machine_step[2] = int(parameters[5])
+    act_F = int(parameters[6])
+    act_S = int(parameters[7])
+    
+    
+    
+        
 
 def delay(delayTime):
     target_time = time.clock() + delayTime
