@@ -289,7 +289,7 @@ void setup(){
     pinMode(ZIN3, OUTPUT);
     pinMode(ZIN4, OUTPUT);
     pinMode(SPINDLE_PIN,OUTPUT);
-
+    pinMode(13,OUTPUT);
     //pinMode(13, OUTPUT);
 
     Serial.begin(115200);
@@ -298,6 +298,7 @@ void setup(){
 }
 
 void REF(){
+  digitalWrite(13, HIGH);
   x = Serial.parseFloat();
   y = Serial.parseFloat();
   z = Serial.parseFloat();
@@ -344,14 +345,15 @@ void REF(){
   delay(100);
   analogWrite(SPINDLE_PIN, 0);
   delay(100);
-  
+  digitalWrite(13, LOW);
   
 
   
 }
 
 void report(){
-  
+  Serial.print(1);
+  Serial.print(" ");
   Serial.print(x,3);
   Serial.print(" ");
   Serial.print(y,3);

@@ -2,28 +2,60 @@ import time
 from tkinter import*
 import serial
 from tkinter import filedialog
-
+import machine
 import prog_mananger
-
+import struct
 
 
 connection_state = False
 
-xpos,ypos,zpos = 0,0,0
-
-loaded_prog=[]
+xpos, ypos, zpos = 0, 0, 0
+xstep, ystep, zstep = 4, 4, 4
+act_s = 0
+act_f =  15
+loaded_prog = []
 
 m1_stop = False
+def readReport(report):
+    global xpos, ypos, zpos, act_f, act_s
+    next_space = report.index(' ')
+    xpos = float(report[0:next_space])
+    report = report[next_space +1 :]
+    next_space = report.index(' ')
+    ypos = float(report[0:next_space])
+    report = report[next_space+1 :]
+    next_space = report.index(' ')
+    zpos = float(report[0:next_space])
+    report = report[next_space+1:]
+    next_space = report.index(' ')
+    xstep = int(report[0:next_space])
+    report = report[next_space+1:]
+    next_space = report.index(' ')
+    ystep = int(report[0:next_space])
+    report = report[next_space+1:]
+    next_space = report.index(' ')
+    zstep = int(report[0:next_space])
+    report = report[next_space+1:]
+    next_space = report.index(' ')
+    act_f = int(report[0:next_space])
+    report = report[next_space+1:]
+    act_s = int(report)
+    
+    
+    
+
+    machine.machine_pos =[xpos, ypos, zpos ]
+    machine.machine_steps =[xstep, ystep, zstep ]
+    machine.saveData()
 
 def doConnection():
     global connection_state
     if not connection_state:
         try:
             #print('elooo')
-            global machine
-            machine = serial.Serial( port_entry.get() ,115200)
-            
-            port_entry.config(state = 'disabled')
+            global mymachine
+            mymachine = serial.Serial(port_entry.get(), 115200)
+            port_entry.config(state ='disabled')
             con_status.config(text = 'Machine Connected', fg= 'green')
             connect.config(text = 'Disconnect')
             connection_state = True
@@ -31,7 +63,7 @@ def doConnection():
         except:
             pass
     else:
-        machine.close()
+        mymachine.close()
         port_entry.config(state = 'normal')
         con_status.config(text = 'Machine not Connected', fg = 'red')
         connect.config(text = 'Connect')
@@ -41,15 +73,21 @@ def doConnection():
 
 
 def updateTime():
-    global machine
-    global xpos
-    upperframe.after(10, updateTime)
+    global mymachine, act_f, act_s
+    
+    root.after(10, updateTime)
     dateAndTime.config(text = '%s' %(time.ctime()))
     if connection_state:
-       if machine.in_waiting != 0:
-           xval.config(text = '%.3f' %(float(arduino.readline())) )
-          
-      
+        if mymachine.in_waiting != 0:
+            buffer = str(mymachine.readline())[2:-5]
+            if buffer[0]== '1' :
+                readReport(buffer[2:])
+    xval.config(text = '%.3f' %(xpos))
+    yval.config(text = '%.3f' %(ypos))
+    zval.config(text = '%.3f' %(zpos))
+    activeFEEDlabel.config(text = '%d' % (act_f))
+    activeRPMlabel.config(text = '%d' %(act_s))
+    
   
 def xMeasure():
     pass    
@@ -145,7 +183,12 @@ def m1Stop():
         m1stop.config(text = 'Disable M1 Stop')
         m1_stop = True
 def REF():
-    pass
+    machine.loadData()
+    pack_to_send = '1 ' + str(machine.machine_pos[0]) + ' ' +  str(machine.machine_pos[1]) + ' '+ str(machine.machine_pos[2]) + ' '
+    pack_to_send += str(machine.machine_steps[0]) + ' ' +  str(machine.machine_steps[1]) + ' '+ str(machine.machine_steps[2])
+    message = bytes(pack_to_send, 'utf-8')
+    mymachine.write(message)
+    
     
     
     
@@ -170,7 +213,7 @@ clock = Frame(upperframe, bg = 'black')
 clock.pack(side = 'left')
 dateAndTime= Label(clock, bg = 'black', fg = 'white' , text = '%s' %(time.ctime()), font = 'verdana 12 bold', width = 40)
 dateAndTime.grid(row = 0)
-updateTime()
+
 
 
 Frame(upperframe, bg= 'white', width = 5).pack(fill = 'y', side = 'left')
@@ -259,7 +302,7 @@ g54_button.pack(side = 'left')
 g55_button = Radiobutton(wcs_buttons,command = enableMeasures, text="G55", variable=selected_wcs, value=2, bg=  'black', fg  = 'white',indicatoron = 0, selectcolor= 'gray', padx = 6)
 g55_button.pack(side = 'left')
 
-g56_button = Radiobutton(wcs_buttons, command = enableMeasures,  text="G55", variable=selected_wcs, value=3, bg=  'black', fg  = 'white',indicatoron = 0, selectcolor= 'gray', padx = 6)
+g56_button = Radiobutton(wcs_buttons, command = enableMeasures,  text="G56", variable=selected_wcs, value=3, bg=  'black', fg  = 'white',indicatoron = 0, selectcolor= 'gray', padx = 6)
 g56_button.pack(side = 'left')
 
 positions.columnconfigure(5, minsize =80)
@@ -391,6 +434,7 @@ browse_button.pack(side = 'left')
 
 rld_button = Button(optionsframe, text = 'Clear', command = clear, width = 8)
 rld_button.pack(side = 'right')
+updateTime()
 
 
 

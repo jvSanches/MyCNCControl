@@ -20,7 +20,7 @@ machine_step= 1/4096
     
 machine_ready = False
 
-machine_pos=[0,0,0]
+machine_pos = [0,0,0]
 machine_steps=[0,0,0]
 
 motion = 0 # G00 , G01, G02, G03, G04
@@ -78,11 +78,11 @@ def loadData():
     machine_pos[0] = float(parameters[0])
     machine_pos[1] = float(parameters[1])
     machine_pos[2] = float(parameters[2])
-    machine_step[0] = int(parameters[3])
-    machine_step[1] = int(parameters[4])
-    machine_step[2] = int(parameters[5])
-    act_F = int(parameters[6])
-    act_S = int(parameters[7])
+    machine_steps[0] = int(parameters[3])
+    machine_steps[1] = int(parameters[4])
+    machine_steps[2] = int(parameters[5])
+    # act_F = int(parameters[6])
+    # act_S = int(parameters[7])
     
     
     
