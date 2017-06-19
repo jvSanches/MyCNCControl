@@ -30,6 +30,7 @@ int FEED = 15 ;
 int t,s;
 int cStep;
 int c1, c2, c3 , c4;
+int ready = 1;
 
 int dtime, times;
 //FILE *f; 
@@ -94,10 +95,15 @@ int stepIt(int axis, int dir){
   
   cStep = cStep + dir;
   
-  if (cStep == 9){
-    cStep = 1;
-  }else if (cStep == 0){
-    cStep = 8;
+  // if (cStep == 9){
+  //   cStep = 1;
+  // }else if (cStep == 0){
+  //   cStep = 8;
+  // }
+  if (cStep > 8){
+    cStep = cStep - 8;
+  }else if (cStep < 1){
+    cStep = cStep + 8;
   }
   
   switch(cStep){
@@ -204,19 +210,21 @@ void moveSteppers(int movetype , float gox, float goy, float goz, float cex , fl
       if (i % 100 == 0){
         report();
       }
-        nex += dx;
-        ney += dy;
-        nez += dz;
-        int dox = intdiv((nex - x),stepdist);
-        int doy = intdiv((ney - y),stepdist);
-        int doz = intdiv((nez - z),stepdist); 
+      nex += dx;
+      ney += dy;
+      nez += dz;
+      int dox = intdiv((nex - x),stepdist);
+      int doy = intdiv((ney - y),stepdist);
+      int doz = intdiv((nez - z),stepdist); 
 
-        // Do moves
-        //Serial.println('movendo');
-
-        x += dox * stepdist;
-        y += doy * stepdist;
-        z += doz * stepdist;
+      // Do moves
+      
+      stepIt('x', (4*dox));
+      x += dox * stepdist;
+      stepIt('y', (4*doy));        
+      y += doy * stepdist;
+      stepIt('z', (4*doz));        
+      z += doz * stepdist;
 
     }
     }else if (movetype == 2 || movetype ==3){
@@ -263,8 +271,12 @@ void moveSteppers(int movetype , float gox, float goy, float goz, float cex , fl
 
         // Do moves
 
+
+        stepIt('x', (4*dox));
         x += dox * stepdist;
+        stepIt('y', (4*doy));        
         y += doy * stepdist;
+        stepIt('z', (4*doz));        
         z += doz * stepdist;
     }
 
@@ -369,6 +381,8 @@ void report(){
   Serial.print(FEED);
   Serial.print(" ");
   Serial.print(RPM);
+  Serial.print(" ");
+  Serial.print(ready);
 
   Serial.println();
 } 

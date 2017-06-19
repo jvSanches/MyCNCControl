@@ -34,7 +34,7 @@ wcs = 53 # G53, G54, G55, G56
 coord = 90 # G90, G91
 
 feed = 94 # G94, G95
-
+standingBy = False
 F = 1
 act_F=0
 
@@ -62,8 +62,7 @@ def saveData():
     file.write(str(machine_steps[0])+ '\n')
     file.write(str(machine_steps[1])+ '\n')
     file.write(str(machine_steps[2])+ '\n')
-    file.write(str(machine_steps[2])+ '\n')
-    file.write(str(act_F)+ '\n')
+    
     
     
     file.close()
@@ -137,7 +136,10 @@ def move(line,line_num):
         line[2],line[3],line[4] = apply91(line[2],line[3],line[4])
     abs_point = applyWcs([line[2],line[3],line[4]],wcs,xyz_change)  
     #print('aaa', line[2],line[3],line[4],abs_point)
+
     
+
+
     steps = curve_generator.generate_move(line[1],abs_point[0],abs_point[1],abs_point[2],line[5],\
     line[6],line[7])
     
@@ -251,6 +253,7 @@ def stopSpindle():
 def set_spindle():    
     ''' if M3 sends s to machine. else, sends 0'''
     if spindle:
+
         print('liga spindle')
         
     else:

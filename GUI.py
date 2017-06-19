@@ -39,7 +39,10 @@ def readReport(report):
     next_space = report.index(' ')
     act_f = int(report[0:next_space])
     report = report[next_space+1:]
-    act_s = int(report)
+    next_space = report.index(' ')
+    act_s = int(report[0:next_space])
+    report = report[next_space+1:]
+    machine.standingBy = bool(int(report))
     
     
     
@@ -70,26 +73,41 @@ def doConnection():
         connection_state = False
         root.protocol('WM_DELETE_WINDOW', root.destroy)
         
-
-
-def updateTime():
-    global mymachine, act_f, act_s
-    
-    root.after(10, updateTime)
+def readSerial():
+    global root , mymachine, act_f, act_s
     dateAndTime.config(text = '%s' %(time.ctime()))
     if connection_state:
         if mymachine.in_waiting != 0:
             buffer = str(mymachine.readline())[2:-5]
             if buffer[0]== '1' :
-                readReport(buffer[2:])
-    xval.config(text = '%.3f' %(xpos))
-    yval.config(text = '%.3f' %(ypos))
-    zval.config(text = '%.3f' %(zpos))
-    activeFEEDlabel.config(text = '%d' % (act_f))
-    activeRPMlabel.config(text = '%d' %(act_s))
+                    readReport(buffer[2:])
+        xval.config(text = '%.3f' %(xpos))
+        yval.config(text = '%.3f' %(ypos))
+        zval.config(text = '%.3f' %(zpos))
+        activeFEEDlabel.config(text = '%d' % (act_f))
+        activeRPMlabel.config(text = '%d' %(act_s))
+
+def updateTime():
+    global mymachine, act_f, act_s
+    
+    root.after(10, updateTime)
+    
+    readSerial()
+    #if mymachine.in_waiting != 0:
+    #         buffer = str(mymachine.readline())[2:-5]
+    #         if buffer[0]== '1' :
+    #             readReport(buffer[2:])
+    # xval.config(text = '%.3f' %(xpos))
+    # yval.config(text = '%.3f' %(ypos))
+    # zval.config(text = '%.3f' %(zpos))
+    # activeFEEDlabel.config(text = '%d' % (act_f))
+    # activeRPMlabel.config(text = '%d' %(act_s))
     
   
 def xMeasure():
+    # while(1 ==1):
+    #     updateTime()
+        # pass
     pass    
  
   
