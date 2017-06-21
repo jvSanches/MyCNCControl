@@ -172,6 +172,7 @@ int stepIt(int axis, int dir){
     zstep = cStep;
     
   }
+  delay(t);
 
   
 }
@@ -181,6 +182,8 @@ int intdiv(float a, float b){
     
     
     return c;
+}
+
 }
 void moveSteppers(int movetype , float gox, float goy, float goz, float cex , float cey ){
   
@@ -206,7 +209,13 @@ void moveSteppers(int movetype , float gox, float goy, float goz, float cex , fl
 
     
 
-    for (long i = 0; i < steps ; i++ ){
+    for (unsigned long i = 0; i < steps ; i++ ){
+      if (Serial.available()>0){
+        if (Serial.parseInt == 9){
+          setRPM(0);
+          break;
+        }
+      }
       if (i % 100 == 0){
         report();
       }
@@ -258,7 +267,13 @@ void moveSteppers(int movetype , float gox, float goy, float goz, float cex , fl
     float startx = x;
     float starty = y;
 
-    for (long i =0; i < steps; i++){
+    for (unsigned long i =0; i < steps; i++){
+      if (Serial.available()>0){
+        if (Serial.parseInt == 9){
+          setRPM(0);
+          break;
+        }
+      }
         
         ang += dt;
         
@@ -433,35 +448,48 @@ float read6;
 
 void loop(){
     if (Serial.available() > 0){
-        header = Serial.parseInt();
-        switch(header){
-            case 1://REF
-                REF();
-                report();
-                break;
-            case 2: // MOVE
-                read1 = Serial.parseInt();
-                read2 = Serial.parseFloat();
-                read3 = Serial.parseFloat();
-                read4 = Serial.parseFloat();
-                read5 = Serial.parseFloat();
-                read6 = Serial.parseFloat();
-                moveSteppers(read1, read2, read3, read4, read5, read6);
-                report();
-                break;
-            case 3: // FEED
-                setFEED(Serial.parseInt());
-                
-                break;
-            case 4: // RPM
-                setRPM(Serial.parseInt());
-                break;
-            case 5: // REPORT
-                report();
-                
-            default:
-                
-                break;
+      header = Serial.parseInt();
+      ready = 0;
+      switch(header){
+          case 1://REF
+              REF();
+              ready =1;
+              report();
+              break;
+          case 2: // MOVE
+              read1 = Serial.parseInt();
+              read2 = Serial.parseFloat();
+              read3 = Serial.parseFloat();
+              read4 = Serial.parseFloat();
+              read5 = Serial.parseFloat();
+              read6 = Serial.parseFloat();
+              moveSteppers(read1, read2, read3, read4, read5, read6);
+              ready = 1;
+              report();
+              break;
+          case 3: // FEED
+              setFEED(Serial.parseInt());
+              ready = 1;
+              report();
+              
+              break;
+          case 4: // RPM
+              setRPM(Serial.parseInt());
+              ready =1;
+              report();
+              break;
+          case 5: // REPORT
+              ready = 1;
+              report();
+              
+          case 9:
+              setRPM(0);
+              ready = 1;
+              report();
+
+          default:
+              
+              break;
 
 
 
