@@ -13,8 +13,10 @@ import msvcrt
 #import math
 import struct
 import Configurator
+#import GUI
 
 #Settings: 
+mymachine = 0
 
 machine_step= 1/4096
     
@@ -139,7 +141,11 @@ def move(line,line_num):
 
     
 
-
+    pack_to_send = '2 '
+    pack_to_send +=  '%d %.3f %.3f %.3f %.3f %.3f ' %((line[1]),abs_point[0],abs_point[1],abs_point[2], line[5], line[6])
+    message = bytes(pack_to_send, 'utf-8')
+    mymachine.write(message)
+    '''
     steps = curve_generator.generate_move(line[1],abs_point[0],abs_point[1],abs_point[2],line[5],\
     line[6],line[7])
     
@@ -186,6 +192,7 @@ def move(line,line_num):
     
     os.system('cls')
     printPos()
+    '''
 
 def JOG(direction, jog_step):
     if direction == '6':
@@ -253,10 +260,18 @@ def stopSpindle():
 def set_spindle():    
     ''' if M3 sends s to machine. else, sends 0'''
     if spindle:
+        pack_to_send = '4 ' + str(S)
+        message = bytes(pack_to_send, 'utf-8') 
+        print(message)   
+        mymachine.write(message)
+
 
         print('liga spindle')
         
     else:
+        pack_to_send = '4 ' + str(0)
+        message = bytes(pack_to_send, 'utf-8')    
+        mymachine.write(message)
         print('desliga spindle')
         
 def connection():

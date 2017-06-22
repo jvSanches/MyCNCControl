@@ -44,6 +44,7 @@ def manange(prog):
     initial_param = [0,0  ,'' ,'','' ,0 ,0 , 0,0 ,0 ,17    , 53 , 21 , 90    , 94       ]
     param=[]
     for i in range(len(prog)):
+        #prog[i] = prog[i].upper()
         global prog_to_print
         print(prog_to_print[i])
                 
@@ -127,7 +128,7 @@ def manange(prog):
                     machine.stopSpindle()
                     
         if line_param[2] != '' or line_param[3] != '' or line_param[4] != '':
-                #print(line_param)                
+                print('movendo')                
                 machine.move(line_param,i)    
            
         

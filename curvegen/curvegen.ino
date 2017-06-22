@@ -172,7 +172,7 @@ int stepIt(int axis, int dir){
     zstep = cStep;
     
   }
-  delay(t);
+  
 
   
 }
@@ -184,7 +184,7 @@ int intdiv(float a, float b){
     return c;
 }
 
-}
+
 void moveSteppers(int movetype , float gox, float goy, float goz, float cex , float cey ){
   
     float nex = x;
@@ -211,7 +211,7 @@ void moveSteppers(int movetype , float gox, float goy, float goz, float cex , fl
 
     for (unsigned long i = 0; i < steps ; i++ ){
       if (Serial.available()>0){
-        if (Serial.parseInt == 9){
+        if (Serial.parseInt() == 9){
           setRPM(0);
           break;
         }
@@ -228,12 +228,17 @@ void moveSteppers(int movetype , float gox, float goy, float goz, float cex , fl
 
       // Do moves
       
-      stepIt('x', (4*dox));
+      for (int r =0; r < 4; r++){
+        stepIt('x', (dox));        
+        stepIt('y', (doy));        
+        stepIt('z', (doz));   
+        delay(2);     
+      }
       x += dox * stepdist;
-      stepIt('y', (4*doy));        
       y += doy * stepdist;
-      stepIt('z', (4*doz));        
       z += doz * stepdist;
+        
+      
 
     }
     }else if (movetype == 2 || movetype ==3){
@@ -269,7 +274,7 @@ void moveSteppers(int movetype , float gox, float goy, float goz, float cex , fl
 
     for (unsigned long i =0; i < steps; i++){
       if (Serial.available()>0){
-        if (Serial.parseInt == 9){
+        if (Serial.parseInt() == 9){
           setRPM(0);
           break;
         }

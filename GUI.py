@@ -63,6 +63,7 @@ def doConnection():
             connect.config(text = 'Disconnect')
             connection_state = True
             root.protocol('WM_DELETE_WINDOW')
+            machine.mymachine = mymachine
         except:
             pass
     else:
@@ -171,8 +172,11 @@ def openFile():
         
         
 def runMDI():
-    MDI_Prog = [MDI_input.get()]
+    MDI_Prog = ['n0']
+    MDI_Prog.append(MDI_input.get())
     MDI_input.delete(0,END)
+    MDI_Prog[1] = MDI_Prog[1].upper()
+    print(MDI_Prog)
     prog_mananger.read(MDI_Prog)
     
 
@@ -184,13 +188,16 @@ def cycleStart():
         if i != '\n':
             buffer += i
         else:
-            list_prog.append(buffer)
+            list_prog.append(buffer.upper())
             buffer = ''
+    print(list_prog)
     prog_mananger.read(list_prog)
     
 
 def reset():
-    pass
+    message = bytes('9', 'utf-8')
+    mymachine.write(message)
+    
 
 def m1Stop():
     global m1_stop
