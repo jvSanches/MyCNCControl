@@ -6,6 +6,7 @@ Created on Mon Dec 26 10:17:07 2016
 """
 import os
 import machine
+# import GUI
 
 
 prog_to_print = []
@@ -44,6 +45,9 @@ def manange(prog):
     initial_param = [0,0  ,'' ,'','' ,0 ,0 , 0,0 ,0 ,17    , 53 , 21 , 90    , 94       ]
     param=[]
     for i in range(len(prog)):
+        while not machine.standingBy:
+            pass #GUI.readSerial()
+            
         #prog[i] = prog[i].upper()
         global prog_to_print
         print(prog_to_print[i])

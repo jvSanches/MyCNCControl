@@ -50,6 +50,21 @@ def readReport(report):
     machine.machine_pos =[xpos, ypos, zpos ]
     machine.machine_steps =[xstep, ystep, zstep ]
     machine.saveData()
+    selec = int(selected_wcs.get())
+    
+    if selec == 1:
+        xpos -= machine.G54[0]
+        ypos -= machine.G54[1]
+        zpos -= machine.G54[2]
+    elif selec == 2:
+        xpos -= machine.G55[0]
+        ypos -= machine.G55[1]
+        zpos -= machine.G55[2]
+    elif selec == 3:
+        xpos -= machine.G56[0]
+        ypos -= machine.G56[1]
+        zpos -= machine.G56[2]
+
 
 def doConnection():
     global connection_state
@@ -77,11 +92,13 @@ def doConnection():
 def readSerial():
     global root , mymachine, act_f, act_s
     dateAndTime.config(text = '%s' %(time.ctime()))
+    
     if connection_state:
         if mymachine.in_waiting != 0:
             buffer = str(mymachine.readline())[2:-5]
             if buffer[0]== '1' :
-                    readReport(buffer[2:])
+                readReport(buffer[2:])
+                
         xval.config(text = '%.3f' %(xpos))
         yval.config(text = '%.3f' %(ypos))
         zval.config(text = '%.3f' %(zpos))
@@ -106,18 +123,53 @@ def updateTime():
     
   
 def xMeasure():
-    # while(1 ==1):
-    #     updateTime()
-        # pass
-    pass    
- 
+    offset = xwcs_entry.get()
+    if offset == '':
+        return
+    offset=float(offset)
+    selec = int(selected_wcs.get())
+    
+    if selec ==1:
+        machine.G54[0] = machine.machine_pos[0] - offset
+    elif selec ==2:
+        machine.G55[0] = machine.machine_pos[0] - offset
+    elif selec ==3:
+        machine.G56[0] = machine.machine_pos[0] - offset
+    xwcs_entry.delete(0, END)
+    machine.saveData()
   
 def yMeasure():
-    pass    
+    offset = ywcs_entry.get()
+    if offset == '':
+        return
+    offset=float(offset)
+    selec = int(selected_wcs.get())
+    
+    if selec ==1:
+        machine.G54[1] = machine.machine_pos[1] - offset
+    elif selec ==2:
+        machine.G55[1] = machine.machine_pos[1] - offset
+    elif selec ==3:
+        machine.G56[1] = machine.machine_pos[1] - offset
+    ywcs_entry.delete(0, END)    
+    machine.saveData()
  
   
 def zMeasure():
-    pass    
+    offset = zwcs_entry.get()
+    if offset == '':
+        return
+    offset=float(offset)
+    selec = int(selected_wcs.get())
+    
+    if selec ==1:
+        machine.G54[2] = machine.machine_pos[2] - offset
+    elif selec ==2:
+        machine.G55[2] = machine.machine_pos[2] - offset
+    elif selec ==3:
+        machine.G56[2] = machine.machine_pos[2] - offset
+    xwcs_entry.delete(0, END)    
+    machine.saveData()
 
 def disableMeasures():
     global x_measure, y_measure, z_measure

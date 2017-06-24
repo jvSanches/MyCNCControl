@@ -70,6 +70,58 @@ float getAngle(float dx, float dy){
         return (pi + atan(a));}   
 }
 //--------------------------------------------------------------
+void setRPM(int new_RPM){
+  //int new_RPM = Serial.parseInt();
+  
+  //Serial.println(new_RPM);
+  if (new_RPM == 0){
+    RPM =0;
+  }else if (new_RPM > 10000){
+    RPM = 10000;
+    
+  }else if (new_RPM < 2000){
+    RPM = 2000;
+  }else{
+    RPM = new_RPM; 
+  }
+  int old_s = s;
+  s = RPM * 0.0255;
+  if ( s > old_s){
+    if (old_s == 0){
+      old_s = 50;
+    }
+  for (old_s; old_s <= s; old_s ++){
+     
+    analogWrite(SPINDLE_PIN, old_s);
+    delay(10);
+    }
+  }
+  analogWrite(SPINDLE_PIN, s);
+}
+
+void report(){
+  Serial.print(1);
+  Serial.print(" ");
+  Serial.print(x,3);
+  Serial.print(" ");
+  Serial.print(y,3);
+  Serial.print(" ");
+  Serial.print(z,3);
+  Serial.print(" ");
+  Serial.print(xstep);
+  Serial.print(" ");
+  Serial.print(ystep);
+  Serial.print(" ");
+  Serial.print(zstep);
+  Serial.print(" ");
+  Serial.print(FEED);
+  Serial.print(" ");
+  Serial.print(RPM);
+  Serial.print(" ");
+  Serial.print(ready);
+
+  Serial.println();
+} 
 
 int stepIt(int axis, int dir){
   if (axis == 'x'){
@@ -229,16 +281,14 @@ void moveSteppers(int movetype , float gox, float goy, float goz, float cex , fl
       // Do moves
       
       for (int r =0; r < 4; r++){
-        stepIt('x', (dox));        
+        stepIt('x', -(dox));        
         stepIt('y', (doy));        
-        stepIt('z', (doz));   
-        delay(2);     
+        stepIt('z', -(doz));   
+        delay(1);     
       }
       x += dox * stepdist;
       y += doy * stepdist;
       z += doz * stepdist;
-        
-      
 
     }
     }else if (movetype == 2 || movetype ==3){
@@ -279,6 +329,9 @@ void moveSteppers(int movetype , float gox, float goy, float goz, float cex , fl
           break;
         }
       }
+      if (i % 100 == 0){
+        report();
+      }
         
         ang += dt;
         
@@ -292,19 +345,26 @@ void moveSteppers(int movetype , float gox, float goy, float goz, float cex , fl
         // Do moves
 
 
-        stepIt('x', (4*dox));
-        x += dox * stepdist;
-        stepIt('y', (4*doy));        
-        y += doy * stepdist;
-        stepIt('z', (4*doz));        
-        z += doz * stepdist;
+        for (int r =0; r < 4; r++){
+        stepIt('x', -(dox));        
+        stepIt('y', (doy));        
+        stepIt('z', -(doz));   
+        delay(1);     
+      }
+      x += dox * stepdist;
+      y += doy * stepdist;
+      z += doz * stepdist;
+        
+      
+
+    }
     }
 
 
 
 
     }
-}
+
 
 
 void setup(){
@@ -383,29 +443,7 @@ void REF(){
   
 }
 
-void report(){
-  Serial.print(1);
-  Serial.print(" ");
-  Serial.print(x,3);
-  Serial.print(" ");
-  Serial.print(y,3);
-  Serial.print(" ");
-  Serial.print(z,3);
-  Serial.print(" ");
-  Serial.print(xstep);
-  Serial.print(" ");
-  Serial.print(ystep);
-  Serial.print(" ");
-  Serial.print(zstep);
-  Serial.print(" ");
-  Serial.print(FEED);
-  Serial.print(" ");
-  Serial.print(RPM);
-  Serial.print(" ");
-  Serial.print(ready);
 
-  Serial.println();
-} 
   
 void setFEED(int new_feed){
   if( new_feed <= 14){
@@ -416,34 +454,7 @@ void setFEED(int new_feed){
   t = 60 /(4076 * FEED);           
 }
 
-void setRPM(int new_RPM){
-  //int new_RPM = Serial.parseInt();
-  
-  //Serial.println(new_RPM);
-  if (new_RPM == 0){
-    RPM =0;
-  }else if (new_RPM > 10000){
-    RPM = 10000;
-    
-  }else if (new_RPM < 2000){
-    RPM = 2000;
-  }else{
-    RPM = new_RPM; 
-  }
-  int old_s = s;
-  s = RPM * 0.0255;
-  if ( s > old_s){
-    if (old_s == 0){
-      old_s = 50;
-    }
-  for (old_s; old_s <= s; old_s ++){
-     
-    analogWrite(SPINDLE_PIN, old_s);
-    delay(10);
-    }
-  }
-  analogWrite(SPINDLE_PIN, s);
-}
+
 int read1;
 float read2;
 float read3;

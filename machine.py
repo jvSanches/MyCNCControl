@@ -64,6 +64,16 @@ def saveData():
     file.write(str(machine_steps[0])+ '\n')
     file.write(str(machine_steps[1])+ '\n')
     file.write(str(machine_steps[2])+ '\n')
+    file.write(str(G54[0])+ '\n')
+    file.write(str(G54[1])+ '\n')
+    file.write(str(G54[2])+ '\n')
+    file.write(str(G55[0])+ '\n')
+    file.write(str(G55[1])+ '\n')
+    file.write(str(G55[2])+ '\n')
+    file.write(str(G56[0])+ '\n')
+    file.write(str(G56[1])+ '\n')
+    file.write(str(G56[2])+ '\n')
+
     
     
     
@@ -82,8 +92,17 @@ def loadData():
     machine_steps[0] = int(parameters[3])
     machine_steps[1] = int(parameters[4])
     machine_steps[2] = int(parameters[5])
-    # act_F = int(parameters[6])
-    # act_S = int(parameters[7])
+    G54[0] = float(parameters[6])
+    G54[1] = float(parameters[7])
+    G54[2] = float(parameters[8])
+    G55[0] = float(parameters[9])
+    G55[1] = float(parameters[10])
+    G55[2] = float(parameters[11])
+    G56[0] = float(parameters[12])
+    G56[1] = float(parameters[13])
+    G56[2] = float(parameters[14])
+
+    
     
     
     
@@ -138,6 +157,7 @@ def move(line,line_num):
         line[2],line[3],line[4] = apply91(line[2],line[3],line[4])
     abs_point = applyWcs([line[2],line[3],line[4]],wcs,xyz_change)  
     #print('aaa', line[2],line[3],line[4],abs_point)
+    print(abs_point)
 
     
 
@@ -317,3 +337,6 @@ def ref():
      
 def allOff():
     machine.write(struct.pack('>2B', 91, 0))
+
+def update():
+    pass
